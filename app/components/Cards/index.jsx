@@ -54,12 +54,15 @@
 // };
 
 // export default Card;
-
-import React from 'react';
+"use client"
+import React, { useState } from 'react';
 import '../../../styles/cards.css';
+import Loader from '../Loader';
 
 const Card = ({ title, description }) => {
+  const[loading,SetLoading] = useState(false)
   return (
+    <>
     <div className="card">
       <div className="content">
         <div className="back">
@@ -99,6 +102,8 @@ const Card = ({ title, description }) => {
         </div>
       </div>
     </div>
+     {loading && <Loader loading={loading} />}
+     </>
   );
 };
 

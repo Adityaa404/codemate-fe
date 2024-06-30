@@ -13,7 +13,7 @@ const HomePage = () => {
           Product Requirements Document (PRD) in PDF format.
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex gap-4">
         <Card
           title="Using Git Repo"
           description="Upload a GitHub repository URL to analyze its code structure and generate summaries."
@@ -26,7 +26,7 @@ const HomePage = () => {
         />
         <Card
           title="Show PRD Document"
-          description="Generate a Product Requirements Document (PRD) in PDF format based on the uploaded code."
+          description="Generate summaried report for Product Requirements Document (PRD).  Upcoming Feature..."
           url={"/uploadPdf"}
         />
       </div>

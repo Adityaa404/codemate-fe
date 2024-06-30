@@ -21,12 +21,10 @@
       "@/*": ["./*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "app/components/formater.js"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "craco.config.js", "app/components/TextModal/index.js"],
+  "exclude": ["node_modules"],
+  "typeRoots": [
+    "node_modules/@types",
+    "./typings"  // Add any custom typings directory if necessary
+  ]
 }

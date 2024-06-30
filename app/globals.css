@@ -183,3 +183,21 @@
     transform: translateY(0px);
   }
 }
+
+/* Targets the scrollbar itself */
+::-webkit-scrollbar {
+  width: 8px;  /* or any desired width */
+  height: 8px; /* height for horizontal scrollbars */
+}
+
+/* Targets the draggable part of the scrollbar */
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 10px;
+}
+
+/* Targets the part of the scrollbar track where the thumb isn't */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}

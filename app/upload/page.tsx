@@ -3,7 +3,7 @@ import React from "react";
 
 const upload = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
+    <div style={{background: 'linear-gradient(to bottom right, #000 30%, #111, #333)'}} className="flex items-center justify-center min-h-screen">
       <UploadZipCard />
     </div>
   );

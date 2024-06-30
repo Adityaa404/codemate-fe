@@ -1,0 +1,32 @@
+.dark-tree .ant-tree {
+    background-image: linear-gradient(to bottom, #000 30%, #111, #333);  /* Dark background */
+    color: #ccc;  /* Light text color */
+    min-height: calc(100vh - 47px);
+    padding: 0px 50px;
+    border-radius: 0px;
+  }
+  
+  .dark-tree .ant-tree-node-content-wrapper:hover {
+    background-color: #555;  /* Darker background on hover */
+  }
+  
+  .dark-tree .ant-tree-treenode-selected {
+    /* background-color: #333;  Darker background for selected node */
+  }
+
+  .whole-summary {
+    border: 1px solid white;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: x-small;
+  }
+
+  .whole-summary:hover {
+    border: 1px solid white;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: x-small;
+    background-color: #555;
+  }

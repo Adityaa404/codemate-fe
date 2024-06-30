@@ -38,7 +38,7 @@ export default function UploadZipCard() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 border border-gray-300 rounded-lg shadow-lg text-center">
+    <div style={{background: 'linear-gradient(to top left, #000 30%, #111, #333)'}} className="max-w-md mx-auto p-6 border border-[#333] rounded-lg shadow-lg text-center">
       <h2 className="text-2xl mb-4 text-white">Upload a File</h2>
       <div
         className="border-2 border-dashed border-blue-500 rounded-lg p-6 cursor-pointer mb-4"
@@ -52,11 +52,11 @@ export default function UploadZipCard() {
           onChange={handleFileChange}
           className="hidden"
         />
-        <p className="text-gray-700">
+        <p className="text-white">
           Drag and drop a .zip file here, or click to select one
         </p>
       </div>
-      {file && <p className="text-gray-700">Selected file: {file.name}</p>}
+      {file && <p className="text-white">Selected file: {file.name}</p>}
       <button
         onClick={handleSubmit}
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4">

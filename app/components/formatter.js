@@ -1,5 +1,7 @@
 // components/ReadmeFormatter.js
 import React from "react";
+import Typewriter from './TypeWriter';
+import TypingEffect from "./TypeWriter";
 
 const ReadmeFormatter = ({ text }) => {
   const formatReadme = (text) => {
@@ -50,7 +52,10 @@ const ReadmeFormatter = ({ text }) => {
     return formattedLines;
   };
 
-  return <div>{formatReadme(text)}</div>;
+  const format = formatReadme(text);
+  console.log(text, 'FORMAT');
+
+  return <div style={{  marginTop: '30px', height: '95%',overflow: 'auto', }}>{format}</div>;
 };
 
 export default ReadmeFormatter;

@@ -16,58 +16,10 @@ const { documentation, repoName, repoSummary } = props;
 const [isOpen, setIsOpen] = useState<boolean>(false);
 const [isSummaryModal, setIsSummaryModal] = useState<boolean>(false);
 const [content, setContent] = useState('');
+const [summary, setSummary] = useState(repoSummary);
 const [folderStructure, setFolderStructure] = useState<any>();
-
-// const generateTreeData = (documents: any): TreeNode[] => {
-//   const rootNode: TreeNode = { title: 'Root', key: '0', children: [] };
-//   let keyIndex = 0;
-
-//   const addNode = (path: string[], node: TreeNode, content: string) => {
-//     let currentLevel = rootNode;
-
-//     for (let i = 0; i < path.length; i++) {
-//       const part = path[i];
-//       const isLast = i === path.length - 1;
-//       let childNode = currentLevel.children?.find(child => child.title === part);
-
-//       if (!childNode) {
-//         keyIndex++;
-//         const newKey = `${currentLevel.key}-${keyIndex}`;
-
-//         if (isLast) {
-//           // It's a file, make it a leaf node with a clickable button
-//           childNode = {
-//             title: (
-//               <Tooltip title="Click to view summary">
-//                 <Button type="link" onClick={() => showModal(content)}>
-//                   {part}
-//                 </Button>
-//               </Tooltip>
-//             ),
-//             key: newKey
-//           };
-//         } else {
-//           // It's a folder
-//           childNode = { title: part, key: newKey, children: [] };
-//         }
-
-//         if (currentLevel.children) {
-//           currentLevel.children.push(childNode);
-//         }
-//       }
-
-//       currentLevel = childNode;
-//     }
-//   };
-
-
-//   Object.keys(documents).forEach(filePath => {
-//     const pathParts = filePath.split('/');
-//     addNode(pathParts, rootNode, documents[filePath]);
-//   });
-
-//   return rootNode.children || [];
-// };
+const [loading, setLoading] = useState(false);
+const [summaryLoader, setSummaryLoader] = useState(false);
 
 interface TreeNode {
     title: React.ReactNode;
@@ -78,18 +30,23 @@ interface TreeNode {
 
   const getFileDoc = async (path: string) => {
 
+
     console.log(path,'PATH');
 
     if(path === ''){
         return;
     }
-
+    setLoading(true);
+    setIsOpen(true);
     try {
         const stringiFied = localStorage.getItem('repo') || '';
         const { url } = JSON.parse(stringiFied);
         const formData = new FormData();
         // formData.append("github_url", url);
-        formData.append("file_path", path);
+        const name = url.split('/').pop(); 
+        const repositoryName = name?.substring(0, name.lastIndexOf('.'));
+        const pathName = `${repositoryName}/${path}`
+        formData.append("file_path", pathName);
 
         const response = await fetch(
           "https://df0e-2401-4900-1c19-2ea9-54-737c-c168-166a.ngrok-free.app/api/single-file",
@@ -105,18 +62,19 @@ interface TreeNode {
 
         const data = await response.json();
 
-        console.log(data);
+        setContent(data?.documentation[`directory/${pathName}`] || '');
+        setIsSummaryModal(false);
         
     } catch (error) {
       console.error("Error in fetch request:", error);
       throw error;
     }
-    // setLoading(false);
+    setLoading(false);
   }
   
   const parseDirectoryStructure = (directoryString: string): TreeNode[] => {
     // Splitting the string into paths by line breaks
-    const paths = directoryString.split('\n');
+    const paths = directoryString?.split('\n') ||  [];
     const treeData: TreeNode[] = [];
   
     // Function to find or create nodes recursively
@@ -125,11 +83,11 @@ interface TreeNode {
         return;
       }
   
-      const part = pathParts.shift()!;
+      const part = pathParts?.shift()!;
       let childNode = node.children?.find(n => n.title === part);
   
       if (!childNode) {
-        const isLeaf = pathParts.length === 0;
+        const isLeaf = pathParts?.length === 0;
         childNode = {
           title: part,
           key: node.key + '/' + part,
@@ -160,7 +118,7 @@ interface TreeNode {
     paths.forEach(path => {
       const parts = path.split('/');
       if (parts.length > 0) {
-        const rootPart = parts.shift()!;
+        const rootPart = parts?.shift()!;
         let rootNode = treeData.find(node => node.title === rootPart);
         if (!rootNode) {
           rootNode = {
@@ -175,28 +133,73 @@ interface TreeNode {
       }
     });
   
-    console.log('Tree Data:', treeData); // Log the generated tree data for debugging
     return treeData;
   };
+
+  const getFullSummary =async () => {
+    setSummaryLoader(true);
+
+    try {
+        const stringiFied = localStorage.getItem('repo') || '';
+        const { url } = JSON.parse(stringiFied);
+        const formData = new FormData();
+        const name = url.split('/').pop(); 
+        const repositoryName = name?.substring(0, name.lastIndexOf('.'));
+        formData.append("folder_name", repositoryName);
+
+        const response = await fetch(
+          "https://df0e-2401-4900-1c19-2ea9-54-737c-c168-166a.ngrok-free.app/api/upload",
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        setSummary(data?.summary);
+        setIsSummaryModal(true);
+        setIsOpen(false);
+                
+    } catch (error) {
+      console.error("Error in fetch request:", error);
+      throw error;
+    }
+    setSummaryLoader(false);
+  }
 
 
 
 const getDirStructure =async (documentation: string) => {
 
     const data = parseDirectoryStructure(documentation);
-    // const treeData = generateTreeData(documentation);
     setFolderStructure(data)
     
 }
 
 useEffect(()=>{
     console.log(documentation, 'DOC');
-    if(documentation){
+    if(documentation?.length){
         getDirStructure(documentation);
     }
     
 },[documentation])
 
+useEffect(()=>{
+    const directory_structure = localStorage?.getItem('directory_structure');
+
+        if(directory_structure){
+            getDirStructure(JSON.parse(directory_structure));
+        }
+        // const summary = localStorage?.getItem('summary');
+        // if(summary){
+        //     setSummary(JSON.parse(summary));
+        // }
+},[])
 const toggleModal = () =>{
     setIsOpen(!isOpen);
   }
@@ -214,8 +217,7 @@ const toggleSummarymodal = () =>{
   return (
         <div className="dark-tree" >
             <div style={{background: 'black', color: 'white', padding: '10px 50px', display: 'flex', gap: '20px'}}>
-                {/* <div>{repoName}</div> */}
-                <div className='whole-summary' onClick={toggleSummarymodal}>Get Whole Summary</div>
+                <div className='whole-summary' onClick={getFullSummary}>Get Whole Summary</div> {summaryLoader  && <div>Generating your response...</div>}
             </div>
             <Tree
                 showLine
@@ -223,8 +225,8 @@ const toggleSummarymodal = () =>{
                 treeData={folderStructure}
             />
             
-            <TextModal isOpen={isSummaryModal} toggleModal={toggleSummarymodal} readmeText={repoSummary}/>
-            <TextModal isOpen={isOpen} toggleModal={toggleModal} readmeText={content} />
+            <TextModal loading={summaryLoader} isOpen={isSummaryModal} toggleModal={toggleSummarymodal} readmeText={summary}/>
+            <TextModal loading={loading} isOpen={isOpen} toggleModal={toggleModal} readmeText={content} />
         </div>
   );
 };

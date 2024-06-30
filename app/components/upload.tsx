@@ -1,9 +1,11 @@
 "use client";
 import { useState, DragEvent } from "react";
-
+import { useRouter } from "next/navigation";
 export default function UploadZipCard() {
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -26,19 +28,42 @@ export default function UploadZipCard() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
       setMessage("No file selected. Please upload a .zip file.");
       return;
     }
 
-    // Form submission logic here
-    console.log("File submitted:", file);
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(
+        "https://df0e-2401-4900-1c19-2ea9-54-737c-c168-166a.ngrok-free.app/api/zip-file",
+        {
+          method: 'POST',
+          body: formData
+        },
+      );
+      const data = await response.json();
+      localStorage.setItem('directory_structure', JSON.stringify(data?.directory_structure))
+      router.push("/file-wise-docs");
+      setMessage("File uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setMessage("Error uploading file. Please try again.");
+    }
+    setLoading(false);
   };
 
   return (
-    <div style={{background: 'linear-gradient(to top left, #000 30%, #111, #333)'}} className="max-w-md mx-auto p-6 border border-[#333] rounded-lg shadow-lg text-center">
+    <div
+      style={{
+        background: "linear-gradient(to top left, #000 30%, #111, #333)",
+      }}
+      className="max-w-md mx-auto p-6 border border-[#333] rounded-lg shadow-lg text-center">
       <h2 className="text-2xl mb-4 text-white">Upload a File</h2>
       <div
         className="border-2 border-dashed border-blue-500 rounded-lg p-6 cursor-pointer mb-4"
@@ -60,7 +85,7 @@ export default function UploadZipCard() {
       <button
         onClick={handleSubmit}
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4">
-        Submit
+        {loading ? 'fetching...' : 'Submit'}
       </button>
       {message && <p className="mt-4 text-red-500">{message}</p>}
     </div>

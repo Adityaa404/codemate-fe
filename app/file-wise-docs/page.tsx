@@ -29,9 +29,7 @@ const FileWiseDocs = (props: any) => {
 
         const data = await response.json();
         setRepoName(dummyResponse?.directory_structure?.substring(0, dummyResponse?.directory_structure?.indexOf('/')))
-        // setDirString(dummyResponse?.documentation);
         setDirString(data?.directory_structure);
-        setSummary(dummyResponse?.summary);
     } catch (error) {
       console.error("Error in fetch request:", error);
       throw error;
@@ -39,19 +37,28 @@ const FileWiseDocs = (props: any) => {
     setLoading(false);
   };
 
+
+
   useEffect(() => {
-    const repo = localStorage.getItem("repo") || "";
-    const { url, branch, accessToken } = JSON.parse(repo);
-
-    const formData = new FormData();
-    formData.append("github_url", url);
-    formData.append("branch", branch);
-
-    if (accessToken) {
-      formData.append("accessToken", accessToken);
+    const repo = localStorage.getItem("repo");
+    const directory_structure = localStorage.getItem("directory_structure");
+    if(repo){
+        const { url, branch, accessToken } = JSON.parse(repo);
+    
+        const formData = new FormData();
+        formData.append("github_url", url);
+        formData.append("branch", branch);
+    
+        if (accessToken) {
+          formData.append("accessToken", accessToken);
+        }
+    
+        getResponseUsingURL(formData);
     }
-
-    getResponseUsingURL(formData);
+    if(directory_structure){
+        setDirString(JSON.stringify(directory_structure));
+        setLoading(false);
+    }
   }, []);
 
   return (

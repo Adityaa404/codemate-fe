@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import ReadmeFormatter from "../formatter";
 
 
-const Summary = ({ isOpen, onClose, readmeText }) => {
+const Summary = ({loading,  isOpen, onClose, readmeText }) => {
   if (!isOpen) {
     return null;
   }
@@ -14,16 +14,17 @@ const Summary = ({ isOpen, onClose, readmeText }) => {
         <button style={styles.closeButton} onClick={onClose}>
           &times;
         </button>
-        <ReadmeFormatter text={readmeText} />
+        {loading ? <div>fetching your file summary...</div> : <ReadmeFormatter text={readmeText} />}
       </div>
     </div>
   );
 };
 
-const TextModal = ({isOpen, toggleModal, readmeText }) => {
+const TextModal = ({isOpen, toggleModal, readmeText, loading }) => {
   return (
+    
     <div style={styles.app}>
-        <Summary isOpen={isOpen} onClose={toggleModal} readmeText={readmeText} />
+        <Summary loading={loading} isOpen={isOpen} onClose={toggleModal} readmeText={readmeText} />
     </div>
   );
 };
